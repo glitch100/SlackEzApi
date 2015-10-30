@@ -11,7 +11,7 @@ namespace SlackEzAPI
     internal static class Endpoints
     {
         private static string _prefix = "https://slack.com/";
-                private static readonly string ApiToken = WebConfigurationManager.AppSettings.Get("SlackAPIToken");
+        private static readonly string ApiToken = WebConfigurationManager.AppSettings.Get("SlackAPIToken");
         private static readonly string SlashToken = WebConfigurationManager.AppSettings.Get("SlackSlashCommandToken");
 
         public static string ChatMessage(string text, string channelId, bool asUser = true)
