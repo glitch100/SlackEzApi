@@ -1,5 +1,7 @@
 # SlackEzAPI
 
+(Slack-Easy-API)
+
 SlackEzAPI is a simple wrapper around the Slack API so you don't have to mess around with it. It's very simple at the moment offering up only certain functionality, however it's growing slowly, and will eventually wrap the entire API. Current features:
 
   - ChatMessage
