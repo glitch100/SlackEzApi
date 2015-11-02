@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Configuration;
 using Newtonsoft.Json;
-using SlackEzAPI.Models;
+using SlackEzAPI.Responses;
 
 namespace SlackEzAPI
 {
@@ -80,10 +80,10 @@ namespace SlackEzAPI
         /// <param name="channelId">Id of the channel the message exists in</param>
         /// <param name="timeStamp">Timestamp of the message</param>
         /// <returns>SlackResponse with information regarding the success of the delete</returns>
-        public async Task<SlackResponse> DeleteChatMessage(string userId, string channelId, string timeStamp)
+        public async Task<SlackAPIResponse> DeleteChatMessage(string userId, string channelId, string timeStamp)
         {
             await _httpClient.GetAsync(Endpoints.ChatDelete(userId, channelId, timeStamp));
-            return new SlackResponse() { Success = true };
+            return new SlackAPIResponse() { Success = true };
         }
 
         /// <summary>

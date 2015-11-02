@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SlackEzAPI.Models;
+using SlackEzAPI.Responses;
 
 namespace SlackEzAPI
 {
     public interface ISlackAPIService
     {
-        Task<SlackResponse> DeleteChatMessage(string userId, string channelId, string timeStamp);
+        Task<SlackAPIResponse> DeleteChatMessage(string userId, string channelId, string timeStamp);
         Task<BaseSlackResponse> SendChatMessage(string text, string channelId, bool asUser = true);
         Task<BaseSlackResponse> SendChatMessageWithImage(string text, string channelId, IEnumerable<Attachment> attachments, bool asUser = true);
         Task<ChannelResponse> GetChannelInfo(string channelId);
