@@ -58,8 +58,10 @@
     <Compile Include="Models\Attachment.cs" />
     <Compile Include="Models\BaseSlackResponse.cs" />
     <Compile Include="Models\BotMessage.cs" />
-    <Compile Include="Models\ChannelInfo.cs" />
     <Compile Include="Models\ChannelResponse.cs" />
+    <Compile Include="Models\HistoryResponse.cs" />
+    <Compile Include="Models\Message.cs" />
+    <Compile Include="Models\MessageHistory.cs" />
     <Compile Include="Models\SlackResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SlackAPIService.cs" />

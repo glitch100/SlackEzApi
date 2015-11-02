@@ -1,9 +1,13 @@
-﻿using SlackEzAPI.Models;
+﻿using System.Collections.Generic;
+using SlackEzAPI.Models;
 
 namespace SlackEzAPI.Models
 {
     public class ChannelResponse : BaseSlackResponse
     {
-        public ChannelInfo Channel { get; set; }
+        /// <summary>
+        /// Members of a channel
+        /// </summary>
+        public IEnumerable<string> Members { get; set; } 
     }
 }

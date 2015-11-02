@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -49,10 +51,19 @@ namespace SlackEzAPI
         {
             return string.Format("{0}{1}?token={2}&user={3}&channel={4}&ts={5}", _prefix, "/api/chat.delete", ApiToken,
                 userId, channelId, timeStamp);
+        }        
+        
+        public static string ChatHistory(string channelId, string latest, string oldest, int inclusive, int count, int unreads)
+        {
+            return string.Format("{0}{1}?token={2}&channel={3}&latest={4}&oldest={5}&inclusive={6}&count={7}&unreads={8}", _prefix, "/api/channels.history", ApiToken,
+                channelId, latest, oldest, inclusive, count, unreads);
         }
 
     }
 
+    /// <summary>
+    /// Slack Service responsible for communicating with the SlackAPI
+    /// </summary>
     public class SlackAPIService : ISlackAPIService
     {
         private readonly HttpClient _httpClient;
@@ -62,12 +73,26 @@ namespace SlackEzAPI
             _httpClient = new HttpClient(new HttpClientHandler());
         }     
 
+        /// <summary>
+        /// Delete a chat message from a slack channel
+        /// </summary>
+        /// <param name="userId">Id of the User who posted it </param>
+        /// <param name="channelId">Id of the channel the message exists in</param>
+        /// <param name="timeStamp">Timestamp of the message</param>
+        /// <returns>SlackResponse with information regarding the success of the delete</returns>
         public async Task<SlackResponse> DeleteChatMessage(string userId, string channelId, string timeStamp)
         {
             await _httpClient.GetAsync(Endpoints.ChatDelete(userId, channelId, timeStamp));
             return new SlackResponse() { Success = true };
         }
 
+        /// <summary>
+        /// Send a chat message to a channel as a user
+        /// </summary>
+        /// <param name="text">Text to send in the message</param>
+        /// <param name="channelId">Channel to send the message too</param>
+        /// <param name="asUser">Whether we should send the message as the user</param>
+        /// <returns>BaseSlackRepsonse indicating the success as well as the timestamp of the message</returns>
         public async Task<BaseSlackResponse> SendChatMessage(string text, string channelId, bool asUser = true)
         {
             var message = await _httpClient.GetAsync(Endpoints.ChatMessage(text, channelId, asUser));
@@ -76,7 +101,11 @@ namespace SlackEzAPI
             return messageObject ?? new BaseSlackResponse() { Ok= false };
         }
 
-
+        /// <summary>
+        /// Get information about a channel, based on its Channel Id
+        /// </summary>
+        /// <param name="channelId">The channel to get information for</param>
+        /// <returns>A Channel response with a list of members and other information</returns>
         public async Task<ChannelResponse> GetChannelInfo(string channelId)
         {
             var message = await _httpClient.GetAsync(Endpoints.ChannelInfo(channelId));
@@ -85,7 +114,34 @@ namespace SlackEzAPI
             return messageObject ?? new ChannelResponse() { Ok = false };
         }
 
-        public async Task<BaseSlackResponse> SendChatMessageWithAttachment(string text, string channelId,IEnumerable<Attachment> attachments, bool asUser = true)
+        /// <summary>
+        /// Get the message history of a specified channel
+        /// </summary>
+        /// <param name="channelId">he channel to get message history for</param>
+        /// <param name="latest">End of time range of messages to include in results</param>
+        /// <param name="oldest">Start of time range of messages to include in results</param>
+        /// <param name="inclusive">Include messages with latest/oldest timestamp</param>
+        /// <param name="count">Number of messages to return, between 1 and 1000</param>
+        /// <param name="unreads">Include unread count display in output</param>
+        /// <returns></returns>
+        public async Task<HistoryResponse> GetChannelHistory(string channelId, decimal latest = 0, decimal oldest = 0, bool inclusive = false, int count = 100,
+            bool unreads = false)
+        {
+            var message = await _httpClient.GetAsync(Endpoints.ChatHistory(channelId,latest == 0 ? "now" : latest.ToString(), oldest.ToString(), Convert.ToInt32(inclusive),count, Convert.ToInt32(unreads)));
+            var messageJson = await message.Content.ReadAsStringAsync();
+            var messageObject = JsonConvert.DeserializeObject<HistoryResponse>(messageJson);
+            return messageObject ?? new HistoryResponse() { Ok = false };
+        }
+
+        /// <summary>
+        /// Sends a Chat Message with an Image Attached
+        /// </summary>
+        /// <param name="text">Text for the attachment</param>
+        /// <param name="channelId">Id of the channel to post to</param>
+        /// <param name="attachments">Attachments to include</param>
+        /// <param name="asUser">Whether to post as the user</param>
+        /// <returns>BaseSlackRepsonse indicating the success as well as the timestamp of the message</returns>
+        public async Task<BaseSlackResponse> SendChatMessageWithImage(string text, string channelId,IEnumerable<Attachment> attachments, bool asUser = true)
         {
             var message = await _httpClient.GetAsync(Endpoints.ChatMessageWithAttachment(text, channelId,attachments.ToArray(), asUser));
             var messageJson = await message.Content.ReadAsStringAsync();
